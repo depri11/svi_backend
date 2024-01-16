@@ -7,7 +7,7 @@ import (
 	mysql "github.com/go-sql-driver/mysql"
 )
 
-func InitDatabase() error {
+func InitDatabase() (*sql.DB, error) {
 	config := mysql.Config{
 		User:   "root",
 		Passwd: "",
@@ -27,14 +27,14 @@ func InitDatabase() error {
 	err = db.Ping()
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
 	err = RunMigrate(db)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return db, nil
 }

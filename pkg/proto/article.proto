@@ -4,7 +4,7 @@ package article_proto;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "./article_proto";
+option go_package = "./;article_proto";
 
 enum Status {
   PUBLISH = 0;
@@ -20,4 +20,15 @@ message Post {
   google.protobuf.Timestamp created_date = 5;
   google.protobuf.Timestamp updated_date = 6;
   Status status = 7;
+}
+
+message CreateArticleRequest {
+  string title = 1;
+  string content = 2;
+  string category = 3;
+  Status status = 4;
+}
+
+service articleService {
+  rpc CreateArticle(CreateArticleRequest) returns (Post);
 }
