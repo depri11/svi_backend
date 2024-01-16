@@ -7,5 +7,9 @@ import (
 )
 
 type ArticleUseCase interface {
-	CreateUser(ctx context.Context, payload models.CreateArticle) (*article_proto.Post, error)
+	GetArticles(ctx context.Context, page string, limit string) (*article_proto.GetArticlesResponse, error)
+	CreateArticle(ctx context.Context, payload models.CreateArticleRequest) (*article_proto.Post, error)
+	UpdateArticle(ctx context.Context, payload models.UpdateArticleRequest) (*article_proto.Post, error)
+	GetArticle(ctx context.Context, id string) (*article_proto.GetArticleResponse, error)
+	DeleteArticle(ctx context.Context, id string) error
 }

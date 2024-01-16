@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200),
-    Content TEXT,
+    content TEXT,
     category VARCHAR(100),
     created_date TIMESTAMP,
     updated_date TIMESTAMP,

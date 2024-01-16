@@ -14,7 +14,15 @@ type Post struct {
 	UpdatedDate time.Time
 }
 
-type CreateArticle struct {
+type CreateArticleRequest struct {
+	Title    string `json:"title" validate:"required,min=20"`
+	Content  string `json:"content" validate:"required,min=200"`
+	Category string `json:"category" validate:"required,min=3"`
+	Status   string `json:"status" validate:"required,oneof=publish draft thrash"`
+}
+
+type UpdateArticleRequest struct {
+	ID       string `json:"id" validate:"required`
 	Title    string `json:"title" validate:"required,min=20"`
 	Content  string `json:"content" validate:"required,min=200"`
 	Category string `json:"category" validate:"required,min=3"`

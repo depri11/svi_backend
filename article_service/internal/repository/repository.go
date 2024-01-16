@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	article_proto "sharing_vasion_indonesia/pkg/proto"
 	"time"
@@ -16,6 +17,43 @@ type repository struct {
 
 func NewRepository(db *sql.DB) *repository {
 	return &repository{db}
+}
+
+func (r *repository) GetArticles(ctx context.Context, page int, limit int) (*article_proto.GetArticlesResponse, error) {
+	var results article_proto.GetArticlesResponse
+
+	offset := (page - 1) * limit
+
+	query := `
+	SELECT title, content, category, status
+	FROM posts
+	ORDER BY id
+	LIMIT ? OFFSET ?;
+  `
+
+	rows, err := r.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var result article_proto.GetArticleResponse
+		err := rows.Scan(&result.Title, &result.Content, &result.Category, &result.Status)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		results.Data = append(results.Data, &result)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return &results, nil
 }
 
 func (r *repository) CreateArticle(ctx context.Context, post *article_proto.CreateArticleRequest) (*article_proto.Post, error) {
@@ -49,4 +87,85 @@ func (r *repository) CreateArticle(ctx context.Context, post *article_proto.Crea
 		CreatedDate: timestampProto,
 		UpdatedDate: timestampProto,
 	}, nil
+}
+
+func (r *repository) UpdateArticleById(ctx context.Context, post *article_proto.UpdateArticleRequest) (*article_proto.Post, error) {
+	query := `
+		UPDATE posts
+		SET title = ?, content = ?, category = ?, updated_date = ?, status = ?
+		WHERE id = ?;
+	`
+
+	now := time.Now()
+
+	result, err := r.db.ExecContext(ctx, query, post.Title, post.Content, post.Category, now, post.Status, post.Id)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	if rowsAffected == 0 {
+		return nil, errors.New("no rows affected during update operation")
+	}
+
+	timestampProto := timestamppb.New(now)
+
+	return &article_proto.Post{
+		Id:          post.Id,
+		Title:       post.Title,
+		Content:     post.Content,
+		Category:    post.Category,
+		Status:      post.Status,
+		CreatedDate: timestampProto,
+		UpdatedDate: timestampProto,
+	}, nil
+}
+
+func (r *repository) GetArticleById(ctx context.Context, id string) (*article_proto.GetArticleResponse, error) {
+	var result article_proto.GetArticleResponse
+
+	query := `
+	SELECT title, content, category, status
+	FROM posts
+	WHERE id = ?;
+  `
+
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&result.Title, &result.Content, &result.Category, &result.Status)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (r *repository) DeleteArticleById(ctx context.Context, id string) error {
+	query := `
+	DELETE FROM posts
+	WHERE id = ?;
+  `
+
+	res, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	rowsNum, err := res.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if rowsNum == 0 {
+		return errors.New("no rows affected during delete operation")
+	}
+
+	return nil
 }
