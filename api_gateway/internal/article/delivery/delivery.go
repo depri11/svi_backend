@@ -34,7 +34,7 @@ func (d *articleDelivery) GetArticles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resByte, err := json.Marshal(result)
+	resByte, err := json.Marshal(result.Data)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
