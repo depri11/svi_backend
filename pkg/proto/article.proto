@@ -6,12 +6,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "./;article_proto";
 
-enum Status {
-  PUBLISH = 0;
-  DRAFT = 1;
-  THRASH = 2;
-}
-
 message Post {
   int32 id = 1;
   string title = 2;
@@ -19,14 +13,14 @@ message Post {
   string category = 4;
   google.protobuf.Timestamp created_date = 5;
   google.protobuf.Timestamp updated_date = 6;
-  Status status = 7;
+  string status = 7;
 }
 
 message CreateArticleRequest {
   string title = 1;
   string content = 2;
   string category = 3;
-  Status status = 4;
+  string status = 4;
 }
 
 service articleService {

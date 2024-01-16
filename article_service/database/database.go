@@ -20,9 +20,8 @@ func InitDatabase() (*sql.DB, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		log.Println(err)
-		log.Fatal(err)
+		return nil, err
 	}
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {

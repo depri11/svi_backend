@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"os"
@@ -18,6 +19,9 @@ import (
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	port := ":9001"
 
 	db, err := database.InitDatabase()
@@ -45,14 +49,24 @@ func main() {
 	article_proto.RegisterArticleServiceServer(server, delivery)
 
 	go func() {
-		log.Printf("GRPC Server Article is listening on port: %v", port)
-		log.Fatal(server.Serve(l))
+		err := server.Serve(l)
+		if err != nil {
+			log.Println(err)
+			cancel()
+		}
 	}()
+
+	log.Printf("GRPC Server Article is listening on port: %v", port)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP)
 
-	<-quit
+	select {
+	case q := <-quit:
+		log.Println("signal.Notify:", q)
+	case done := <-ctx.Done():
+		log.Println("ctx.Done:", done)
+	}
 
 	log.Println("Server GRPC Article Exited Properly")
 }

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"log"
 	article_proto "sharing_vasion_indonesia/pkg/proto"
-	"strconv"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -20,22 +19,20 @@ func NewRepository(db *sql.DB) *repository {
 }
 
 func (r *repository) CreateArticle(ctx context.Context, post *article_proto.CreateArticleRequest) (*article_proto.Post, error) {
-	var id string
-
 	query := `
-  INSERT INTO article.posts
-  (Title, Content, Category, Created_date, Updated_date, Status)
-  VALUES($1, $2, $3, $4, $5, $6, $7) returning id
+	INSERT INTO posts
+  (title, content, category, created_date, updated_date, status)
+  VALUES (?, ?, ?, ?, ?, ?);
   `
 	now := time.Now()
 
-	err := r.db.QueryRowContext(ctx, query, post.Title, post.Content, post.Category, now, now, post.Status).Scan(&id)
+	result, err := r.db.ExecContext(ctx, query, post.Title, post.Content, post.Category, now, now, post.Status)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
 
-	idInt, err := strconv.Atoi(id)
+	idResult, err := result.LastInsertId()
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -44,7 +41,7 @@ func (r *repository) CreateArticle(ctx context.Context, post *article_proto.Crea
 	timestampProto := timestamppb.New(now)
 
 	return &article_proto.Post{
-		Id:          int32(idInt),
+		Id:          int32(idResult),
 		Title:       post.Title,
 		Content:     post.Content,
 		Category:    post.Category,
