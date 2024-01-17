@@ -1,11 +1,14 @@
 ## Setup and Run
 
+### Prerequisites
+Make sure to have Protoc installed to generate proto files before initializing the project. See detail https://grpc.io/docs/protoc-installation/
+
 ### 1. Init Project
 
 Before running the API and services, make sure to set up the project by performing the following steps:
 
 ```bash
-# Setup Go modules and tidy dependencies
+# Setup Go modules tidy dependencies and generate proto file
 make init
 ```
 
