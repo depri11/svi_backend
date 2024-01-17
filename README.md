@@ -1,5 +1,3 @@
-# Article API Documentation
-
 ## Setup and Run
 
 ### 1. Init Project
@@ -16,7 +14,6 @@ make init
 To start the API Gateway, use the following command:
 
 ```bash
-# Run the API Gateway
 make api
 ```
 
@@ -25,7 +22,6 @@ make api
 To launch the gRPC Article Service, execute the following command:
 
 ```bash
-# Run gRPC Article Service
 make article-service
 ```
 
