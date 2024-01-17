@@ -19,7 +19,7 @@ func RunMigrate(db *sql.DB) error {
 		return err
 	}
 
-	path := "file://" + filepath.Join(getwd, "..", "migrations")
+	path := "file://" + filepath.Join(getwd, "article_service/migrations")
 
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	if err != nil {
