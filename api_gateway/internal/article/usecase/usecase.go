@@ -16,20 +16,20 @@ func NewArticleUseCase(articleClient article_proto.ArticleServiceClient) *articl
 	return &articleUseCase{articleClient}
 }
 
-func (u *articleUseCase) GetArticles(ctx context.Context, page string, limit string) (*article_proto.GetArticlesResponse, error) {
+func (u *articleUseCase) GetArticles(ctx context.Context, limit string, offset string) (*article_proto.GetArticlesResponse, error) {
 
-	pageInt, err := strconv.Atoi(page)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
+	offsetInt, err := strconv.Atoi(offset)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 
-	result, err := u.articleClient.GetArticles(ctx, &article_proto.GetArticlesRequest{Page: int32(pageInt), Limit: int32(limitInt)})
+	result, err := u.articleClient.GetArticles(ctx, &article_proto.GetArticlesRequest{Limit: int32(limitInt), Offset: int32(offsetInt)})
 	if err != nil {
 		log.Println(err)
 		return nil, err

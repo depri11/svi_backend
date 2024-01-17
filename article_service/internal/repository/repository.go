@@ -19,10 +19,8 @@ func NewRepository(db *sql.DB) *repository {
 	return &repository{db}
 }
 
-func (r *repository) GetArticles(ctx context.Context, page int, limit int) (*article_proto.GetArticlesResponse, error) {
+func (r *repository) GetArticles(ctx context.Context, limit int, offset int) (*article_proto.GetArticlesResponse, error) {
 	var results article_proto.GetArticlesResponse
-
-	offset := (page - 1) * limit
 
 	query := `
 	SELECT title, content, category, status

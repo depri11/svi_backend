@@ -24,10 +24,10 @@ func NewDelivery(articleUseCase interfaces.ArticleUseCase, r *mux.Router) *artic
 
 func (d *articleDelivery) GetArticles(w http.ResponseWriter, r *http.Request) {
 	limit := mux.Vars(r)["limit"]
-	page := mux.Vars(r)["page"]
+	offset := mux.Vars(r)["offset"]
 
 	ctx := context.Background()
-	result, err := d.articleUseCase.GetArticles(ctx, page, limit)
+	result, err := d.articleUseCase.GetArticles(ctx, limit, offset)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

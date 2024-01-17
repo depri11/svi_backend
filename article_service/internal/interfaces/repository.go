@@ -6,7 +6,7 @@ import (
 )
 
 type ArticleRepository interface {
-	GetArticles(ctx context.Context, page int, limit int) (*article_proto.GetArticlesResponse, error)
+	GetArticles(ctx context.Context, limit int, offset int) (*article_proto.GetArticlesResponse, error)
 	CreateArticle(ctx context.Context, post *article_proto.CreateArticleRequest) (*article_proto.Post, error)
 	UpdateArticleById(ctx context.Context, post *article_proto.UpdateArticleRequest) (*article_proto.Post, error)
 	GetArticleById(ctx context.Context, id string) (*article_proto.GetArticleResponse, error)

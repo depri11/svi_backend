@@ -16,7 +16,7 @@ func NewUseCase(repoArticle interfaces.ArticleRepository) *usecase {
 }
 
 func (uc *usecase) GetArticles(ctx context.Context, payload *article_proto.GetArticlesRequest) (*article_proto.GetArticlesResponse, error) {
-	result, err := uc.repoArticle.GetArticles(ctx, int(payload.Page), int(payload.Limit))
+	result, err := uc.repoArticle.GetArticles(ctx, int(payload.Limit), int(payload.Offset))
 	if err != nil {
 		log.Println(err)
 		return nil, err
