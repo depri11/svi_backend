@@ -37,10 +37,11 @@ message GetArticleByIdRequest {
 }
 
 message GetArticleResponse {
-  string title = 1;
-  string content = 2;
-  string category = 3;
-  string status = 4;
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  string category = 4;
+  string status = 5;
 }
 
 message DeleteArticleRequest {
@@ -53,7 +54,8 @@ message GetArticlesRequest {
 }
 
 message GetArticlesResponse {
-  repeated GetArticleResponse data = 1;
+  int32 total = 1;
+  repeated GetArticleResponse data = 2;
 }
 
 service articleService {

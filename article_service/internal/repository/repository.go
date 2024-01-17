@@ -21,9 +21,15 @@ func NewRepository(db *sql.DB) *repository {
 
 func (r *repository) GetArticles(ctx context.Context, limit int, offset int) (*article_proto.GetArticlesResponse, error) {
 	var results article_proto.GetArticlesResponse
+	var count int32
+
+	countQuery := `
+	SELECT count(1)
+	FROM posts
+	`
 
 	query := `
-	SELECT title, content, category, status
+	SELECT id, title, content, category, status
 	FROM posts
 	ORDER BY id
 	LIMIT ? OFFSET ?;
@@ -36,9 +42,16 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) (*a
 	}
 	defer rows.Close()
 
+	err = r.db.QueryRowContext(ctx, countQuery).Scan(&count)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	results.Total = count
+
 	for rows.Next() {
 		var result article_proto.GetArticleResponse
-		err := rows.Scan(&result.Title, &result.Content, &result.Category, &result.Status)
+		err := rows.Scan(&result.Id, &result.Title, &result.Content, &result.Category, &result.Status)
 		if err != nil {
 			log.Println(err)
 			return nil, err
